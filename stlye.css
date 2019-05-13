@@ -1,0 +1,25 @@
+h1 {
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 6px 6px 15px #999;
+    color: #2af;
+}
+
+.project {
+    display: inline-block;
+    width: 200px;
+    height: 100px;
+    line-height: 100px;
+    border:3px solid;
+    border-radius:20px;
+    text-align: center;
+    vertical-align: center;
+    background-color: darkslateblue;
+    color: white;
+}
+
+.content {
+    text-align: center;
+    width: 60%;
+    margin: 20px auto;
+}
