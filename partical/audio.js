@@ -68,6 +68,7 @@ function createPartical(x,y,r,c,vx,vy,type) {
         ctx.fill();
     };
 
+    //粒子的移动
     this.move = function (sum) {
         if (this.isOutOfLeft()){
             this.x = 0;
@@ -92,10 +93,10 @@ function createPartical(x,y,r,c,vx,vy,type) {
     //根据音频改变粒子的状态
     this.changeState = function () {
         analyser.getByteFrequencyData(dataArray);
-        let arr = dataArray.slice(0, 5);
+        let arr = dataArray.slice(0, 2);
         let sum = arr.reduce(function (a, b) {return a + b}, 0) / arr.length / 200;
-        if(!sum || sum < 0.3) {
-            sum = 0.3;
+        if(!sum || sum < 0.2) {
+            sum = 0.2;
         }
         sum = Math.min(sum, 2);
         this.move(sum);
@@ -121,7 +122,7 @@ function createPartical(x,y,r,c,vx,vy,type) {
         this.ratio = 1+ sum;
     };
 
-
+//越界判断
     this.isOutOfRight = function () {
         return this.x + this.vx > canvas.width ;
     };
