@@ -13,7 +13,7 @@ var analyser = audioCtx.createAnalyser();
 
 //一些参数设置
 gainNode.gain.value = 0.5;
-analyser.fftSize = 256;
+analyser.fftSize = 1024;
 
 //结点的连接
 musicSourceNode.connect(gainNode);
@@ -49,7 +49,7 @@ var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
 //粒子的创建
-function createPartical(x,y,r,c,vx,vy,type) {
+function createParticle(x,y,r,c,vx,vy,type) {
     this.type = type;
     this.x = x;
     this.y = y;
@@ -94,32 +94,31 @@ function createPartical(x,y,r,c,vx,vy,type) {
     this.changeState = function () {
         analyser.getByteFrequencyData(dataArray);
         let arr = dataArray.slice(0, 2);
-        let sum = arr.reduce(function (a, b) {return a + b}, 0) / arr.length / 200;
-        if(!sum || sum < 0.2) {
+        let sum = arr.reduce(function (a, b) {return a + b}, 0) / arr.length / 130;
+        sum = sum*sum;
+        if(!sum || sum < 0.7) {
             sum = 0.2;
         }
-        sum = Math.min(sum, 2);
         this.move(sum);
 
         switch (this.type) {
-            case "low":arr = dataArray.slice(0,40);
-                sum = arr.reduce(function(a,b){return a+b},0)*0.1;
+            case "low":arr = dataArray.slice(0,20);
+                sum = arr.reduce(function(a,b){return a+b},0) / arr.length * 0.02;
                 break;
             case "mid":
-                arr = dataArray.slice(41,65);
-                sum = arr.reduce(function(a,b){return a+b},0)*0.1;
+                arr = dataArray.slice(57,67);
+                sum = arr.reduce(function(a,b){return a+b},0)/ arr.length * 0.02;
                 break;
             case "high":
-                arr = dataArray.slice(66,128);
-                sum = arr.reduce(function(a,b){return a+b},0)*0.1;
+                arr = dataArray.slice(104,118);
+                sum = arr.reduce(function(a,b){return a+b},0)/ arr.length * 0.02;
                 break;
         }
-        sum = sum / 300
-        if(!sum || sum < 0.3) {
-            sum = 0.3;
+        sum = (1+ sum)*(1+ sum/2)/4;
+        if(!sum || sum < 0.5) {
+            sum = 0.5;
         }
-        sum = Math.min(sum, 2);
-        this.ratio = 1+ sum;
+        this.ratio = sum;
     };
 
 //越界判断
@@ -139,19 +138,24 @@ function createPartical(x,y,r,c,vx,vy,type) {
 }
 
 //粒子生成
-var particals = [];
+var particles = [];
 for(var i = 0; i < 65; i++){
-    particals[i] = new createPartical(randomInt(0,canvas.width), randomInt(0,canvas.height), randomInt(5,15)
-        , colorRgb(randomInt(0,255), randomInt(0,255), randomInt(0,255)), randomFloat(-1,1), randomFloat(-1,1),
+    particles[i] = new createParticle(
+        randomInt(0,canvas.width),
+        randomInt(0,canvas.height),
+        randomInt(10,16),
+        colorRgb(randomInt(0,255), randomInt(0,255), randomInt(0,255)),
+        randomFloat(-1,1),
+        randomFloat(-1,1),
         randomType());
 }
 
 //绘制
 function draw() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    for(var i = 0; i < particals.length; i++){
-        particals[i].changeState();
-        particals[i].draw();
+    for(var i = 0; i < particles.length; i++){
+        particles[i].changeState();
+        particles[i].draw();
     }
 
     //开启循环动画播放模式用的代码
